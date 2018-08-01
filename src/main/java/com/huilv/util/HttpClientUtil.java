@@ -1,4 +1,4 @@
-package com.hebao.test.utils;
+package com.huilv.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +26,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
@@ -35,6 +34,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.alibaba.fastjson.JSONObject;
+
 
 public class HttpClientUtil {
 	public static CloseableHttpClient httpClient = null;
@@ -49,14 +49,12 @@ public class HttpClientUtil {
 
 	static void initHttp() {
 		context = HttpClientContext.create();
-		cookieStore = new BasicCookieStore();
 		// ���ó�ʱʱ�䣨���ӷ���˳�ʱ1�룬�������ݷ��س�ʱ2�룩
 		requestConfig = RequestConfig.custom().setConnectTimeout(120000).setSocketTimeout(60000)
 				.setConnectionRequestTimeout(60000).build();
 		// ����Ĭ����ת�Լ��洢cookie
 		httpClient = HttpClientBuilder.create().setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy())
-				.setRedirectStrategy(new DefaultRedirectStrategy()).setDefaultRequestConfig(requestConfig)
-				.setDefaultCookieStore(cookieStore).build();
+				.setRedirectStrategy(new DefaultRedirectStrategy()).setDefaultRequestConfig(requestConfig).build();
 	}
 
 	public static String jsonPost(String url, Map<String, String> params) {
@@ -91,8 +89,8 @@ public class HttpClientUtil {
 				HttpEntity he = resp.getEntity();
 				respContent = EntityUtils.toString(he, "UTF-8");
 			} else {
-//				System.out.println("״̬��Ϊ:" + resp.getStatusLine().getStatusCode());
-//				System.out.println("�e�`����:" + resp.getStatusLine().getReasonPhrase());
+				// System.out.println("״̬��Ϊ:" + resp.getStatusLine().getStatusCode());
+				// System.out.println("�e�`����:" + resp.getStatusLine().getReasonPhrase());
 			}
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
@@ -172,7 +170,7 @@ public class HttpClientUtil {
 		try {
 
 			String jsonString = JSONObject.toJSONString(params);
-
+			
 			System.out.println(jsonString);
 			// ����url��Դ
 			URL url = new URL(urlPath);
