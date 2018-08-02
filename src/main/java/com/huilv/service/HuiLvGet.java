@@ -3,6 +3,7 @@ package com.huilv.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class HuiLvGet {
 
 	private static String from = "CNY";
 	private static String to = "USD";
+	// , "加拿大元", "欧元"
 	private static String[] currencyNames = { "英镑", "日元", "港币", "加拿大元", "欧元" };
 	private static List<String> currencyCodeList = new ArrayList<String>();
 	private static Map<String, String> codeMap = new HashMap<String, String>();
@@ -30,33 +32,52 @@ public class HuiLvGet {
 		lle.addAll(arrange);
 		// 计算所有组合得到的汇率结果
 		List<Map<String, Object>> calculateTotalRate = calculateTotalRate();
-		Double lowestHuiLv = getLowestHuiLv(calculateTotalRate);
-		Double hignest = gethighestHuiLv(calculateTotalRate);
+		Map<String, Object> lowestHuiLv = getLowestHuiLv(calculateTotalRate);
+		Map<String, Object> highestHuiLv = gethighestHuiLv(calculateTotalRate);
 		// System.out.println(calculateTotalRate);
-		System.out.println(lowestHuiLv);
-		System.out.println(hignest);
+		System.out.println(lowestHuiLv.get("huiLv") + "," + lowestHuiLv.get("route"));
+		System.out.println(highestHuiLv.get("huiLv") + "," + highestHuiLv.get("route"));
 
 	}
 
-	private static Double gethighestHuiLv(List<Map<String, Object>> calculateTotalRate) {
-		List<Double> huiLvList = new ArrayList<Double>();
-		for (Map<String, Object> map : calculateTotalRate) {
-			BigDecimal huiLv = (BigDecimal) map.get("huiLv");
-			huiLvList.add(huiLv.doubleValue());
-		}
-		Collections.sort(huiLvList);
-		Collections.reverse(huiLvList);
-		return huiLvList.get(0);
+	private static Map<String, Object> gethighestHuiLv(List<Map<String, Object>> calculateTotalRate) {
+		List<Map<String, Object>> tempMap = new ArrayList<Map<String, Object>>(calculateTotalRate);
+		Collections.sort(tempMap, new Comparator<Map<String, Object>>() {
+			public int compare(Map<String, Object> map1, Map<String, Object> map2) {
+				BigDecimal huiLv1 = (BigDecimal) map1.get("huiLv");
+				BigDecimal huiLv2 = (BigDecimal) map2.get("huiLv");
+				if (huiLv1.compareTo(huiLv2) > 0) {
+					return 1;
+				} else if (huiLv1.compareTo(huiLv2) == 0) {
+					return 0;
+				} else {
+					return -1;
+				}
+			}
+
+		});
+		Collections.reverse(tempMap);
+		return tempMap.get(0);
 	}
 
-	private static Double getLowestHuiLv(List<Map<String, Object>> calculateTotalRate) {
-		List<Double> huiLvList = new ArrayList<Double>();
-		for (Map<String, Object> map : calculateTotalRate) {
-			BigDecimal huiLv = (BigDecimal) map.get("huiLv");
-			huiLvList.add(huiLv.doubleValue());
-		}
-		Collections.sort(huiLvList);
-		return huiLvList.get(0);
+	private static Map<String, Object> getLowestHuiLv(List<Map<String, Object>> calculateTotalRate) {
+		List<Map<String, Object>> tempMap = new ArrayList<Map<String, Object>>(calculateTotalRate);
+		Collections.sort(tempMap, new Comparator<Map<String, Object>>() {
+			public int compare(Map<String, Object> map1, Map<String, Object> map2) {
+				BigDecimal huiLv1 = (BigDecimal) map1.get("huiLv");
+				BigDecimal huiLv2 = (BigDecimal) map2.get("huiLv");
+				if (huiLv1.compareTo(huiLv2) > 0) {
+					return 1;
+				} else if (huiLv1.compareTo(huiLv2) == 0) {
+					return 0;
+				} else {
+					return -1;
+				}
+
+			}
+
+		});
+		return tempMap.get(0);
 	}
 
 	static {
