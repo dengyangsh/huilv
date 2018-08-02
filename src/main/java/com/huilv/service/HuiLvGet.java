@@ -26,7 +26,6 @@ public class HuiLvGet {
 	public static void main(String[] args) {
 		initCurrencyCode();
 		// 获取全排列下的货币组合
-		// arrange(currencyCodeList, 0, currencyCodeList.size());
 		List<List<String>> arrange = getArrange(currencyCodeList);
 		lle.addAll(arrange);
 		// 计算所有组合得到的汇率结果
