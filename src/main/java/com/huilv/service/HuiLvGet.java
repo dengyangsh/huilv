@@ -2,6 +2,8 @@ package com.huilv.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,7 @@ public class HuiLvGet {
 
 	private static String from = "CNY";
 	private static String to = "USD";
-	private static String[] currencyNames = { "英镑", "日元", "欧元","加拿大元","港币" };
+	private static String[] currencyNames = { "英镑", "日元", "港币" };
 	private static List<String> currencyCodeList = new ArrayList<String>();
 	private static Map<String, String> codeMap = new HashMap<String, String>();
 	static List<List<String>> lle = new ArrayList<List<String>>();
@@ -26,8 +28,31 @@ public class HuiLvGet {
 		arrange(currencyCodeList, 0, currencyCodeList.size());
 		// 计算所有组合得到的汇率结果
 		List<Map<String, Object>> calculateTotalRate = calculateTotalRate();
+		Double lowestHuiLv = getLowestHuiLv(calculateTotalRate);
+		Double hignest = gethighestHuiLv(calculateTotalRate);
 		System.out.println(calculateTotalRate);
 
+	}
+
+	private static Double gethighestHuiLv(List<Map<String, Object>> calculateTotalRate) {
+		List<Double> huiLvList = new ArrayList<Double>();
+		for (Map<String, Object> map : calculateTotalRate) {
+			BigDecimal huiLv = (BigDecimal) map.get("huiLv");
+			huiLvList.add(huiLv.doubleValue());
+		}
+		Collections.sort(huiLvList);
+		Collections.reverse(huiLvList);
+		return huiLvList.get(0);
+	}
+
+	private static Double getLowestHuiLv(List<Map<String, Object>> calculateTotalRate) {
+		List<Double> huiLvList = new ArrayList<Double>();
+		for (Map<String, Object> map : calculateTotalRate) {
+			BigDecimal huiLv = (BigDecimal) map.get("huiLv");
+			huiLvList.add(huiLv.doubleValue());
+		}
+		Collections.sort(huiLvList);
+		return huiLvList.get(0);
 	}
 
 	static {
@@ -53,10 +78,10 @@ public class HuiLvGet {
 				if (i == 0) {
 					huiLv = getHuiLv(from, list.get(i));
 				} else if (i == list.size() - 1) {
-					huiLv = getHuiLv(list.get(i-1), list.get(i));
-					huiLv =huiLv.multiply(getHuiLv(list.get(i), to));
+					huiLv = getHuiLv(list.get(i - 1), list.get(i));
+					huiLv = huiLv.multiply(getHuiLv(list.get(i), to));
 				} else {
-					huiLv = getHuiLv(list.get(i-1), list.get(i));
+					huiLv = getHuiLv(list.get(i - 1), list.get(i));
 				}
 				totalHuilv = totalHuilv.multiply(huiLv);
 			}
