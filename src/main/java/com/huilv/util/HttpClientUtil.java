@@ -18,8 +18,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -34,7 +36,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.alibaba.fastjson.JSONObject;
-
 
 public class HttpClientUtil {
 	public static CloseableHttpClient httpClient = null;
@@ -101,7 +102,6 @@ public class HttpClientUtil {
 		return respContent;
 	}
 
-	@SuppressWarnings("deprecation")
 	public static String jsonGet(String url, Map<String, String> params) {
 		// System.out.println(url);
 
@@ -119,7 +119,14 @@ public class HttpClientUtil {
 				pairList.add(new BasicNameValuePair(key, value));
 			}
 		}
-		HttpGet get = new HttpGet(url);
+		String par = "";
+		try {
+			par = EntityUtils.toString(new UrlEncodedFormEntity(pairList, Consts.UTF_8));
+		} catch (Exception e) {
+			System.out.println("参数转换出错");
+
+		}
+		HttpGet get = new HttpGet(url + "?" + par);
 		HttpResponse resp;
 		try {
 			resp = httpClient.execute(get);
@@ -170,7 +177,7 @@ public class HttpClientUtil {
 		try {
 
 			String jsonString = JSONObject.toJSONString(params);
-			
+
 			System.out.println(jsonString);
 			// ����url��Դ
 			URL url = new URL(urlPath);
