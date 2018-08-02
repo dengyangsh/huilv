@@ -2,9 +2,9 @@ package com.huilv.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,20 +17,25 @@ public class HuiLvGet {
 
 	private static String from = "CNY";
 	private static String to = "USD";
-	private static String[] currencyNames = { "英镑", "日元", "港币" };
+	private static String[] currencyNames = { "英镑", "日元", "港币", "加拿大元", "欧元" };
 	private static List<String> currencyCodeList = new ArrayList<String>();
 	private static Map<String, String> codeMap = new HashMap<String, String>();
 	static List<List<String>> lle = new ArrayList<List<String>>();
+	private static List<List<String>> str_List = new ArrayList<List<String>>();
 
 	public static void main(String[] args) {
 		initCurrencyCode();
 		// 获取全排列下的货币组合
-		arrange(currencyCodeList, 0, currencyCodeList.size());
+		// arrange(currencyCodeList, 0, currencyCodeList.size());
+		List<List<String>> arrange = getArrange(currencyCodeList);
+		lle.addAll(arrange);
 		// 计算所有组合得到的汇率结果
 		List<Map<String, Object>> calculateTotalRate = calculateTotalRate();
 		Double lowestHuiLv = getLowestHuiLv(calculateTotalRate);
 		Double hignest = gethighestHuiLv(calculateTotalRate);
-		System.out.println(calculateTotalRate);
+		// System.out.println(calculateTotalRate);
+		System.out.println(lowestHuiLv);
+		System.out.println(hignest);
 
 	}
 
@@ -75,6 +80,13 @@ public class HuiLvGet {
 			BigDecimal totalHuilv = new BigDecimal(1);
 			for (int i = 0; i < list.size(); i++) {
 				BigDecimal huiLv;
+
+				if (list.size() == 1) {
+					huiLv = getHuiLv(from, list.get(i));
+					totalHuilv = huiLv.multiply(getHuiLv(list.get(i), to));
+					continue;
+				}
+
 				if (i == 0) {
 					huiLv = getHuiLv(from, list.get(i));
 				} else if (i == list.size() - 1) {
@@ -85,6 +97,11 @@ public class HuiLvGet {
 				}
 				totalHuilv = totalHuilv.multiply(huiLv);
 			}
+			// 避免查询不到汇率的情况下。结项整理结果
+			if (totalHuilv.compareTo(BigDecimal.ZERO) <= 0) {
+				continue;
+			}
+
 			Map<String, Object> huiLvForSpecificCurrency = new HashMap<String, Object>();
 			huiLvForSpecificCurrency.put("huiLv", totalHuilv);
 			huiLvForSpecificCurrency.put("route", list.toString());
@@ -126,7 +143,7 @@ public class HuiLvGet {
 	 * @return
 	 */
 	private static BigDecimal getHuiLv(String fromMoney, String toMoney) {
-		System.out.println("汇率查询：" + "from:" + fromMoney + "。to:" + toMoney);
+		// System.out.println("汇率查询：" + "from:" + fromMoney + "。to:" + toMoney);
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("key", "8bb4117eaecf2fa0226c55ba1e264637");
 		params.put("from", fromMoney);
@@ -160,6 +177,24 @@ public class HuiLvGet {
 			} else {
 				currencyCodeList.add(currencyCode);
 			}
+		}
+	}
+
+	public static List<List<String>> getArrange(List<String> lists) {
+		str_List.clear();
+		listAll(lists, new ArrayList<String>());
+		str_List.remove(0);
+		return str_List;
+	}
+
+	public static void listAll(List<String> candidate, List<String> prefix) {
+		str_List.add(prefix);
+		for (int i = 0; i < candidate.size(); i++) {
+			List<String> tmp = new LinkedList<String>(candidate);
+			List<String> prefixList = new LinkedList<String>();
+			prefixList.addAll(prefix);
+			prefixList.add(tmp.remove(i));
+			listAll(tmp, prefixList);
 		}
 	}
 
