@@ -18,5 +18,4 @@ public class SanGuoSha {
 			Thread.sleep(10000);
 		}
 	}
-
 }
