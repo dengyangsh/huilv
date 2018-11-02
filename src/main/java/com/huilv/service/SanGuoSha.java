@@ -41,7 +41,7 @@ public class SanGuoSha {
 				// 查到匹配的字符,获取到唯一的淘宝路径节点
 				Elements taobaoLink = table.select("a[href=" + taobaoUrl + "]");
 				if (taobaoLink.isEmpty()) {
-					Thread.sleep(3000);
+					Thread.sleep(5000);
 					continue;
 				}
 
