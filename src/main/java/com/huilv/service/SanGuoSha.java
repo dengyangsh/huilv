@@ -14,7 +14,7 @@ import com.huilv.util.HttpClientUtil;
 public class SanGuoSha {
 	//
 	private final static String one = "1268";
-	private final static String taobaoUrl = "http://item.taobao.com/item.htm?id=577256448718";
+	private final static String taobaoUrl = "http://item.taobao.com/item.htm?id=580783815036";
 
 	public static void main(String[] args) throws InterruptedException, UnsupportedEncodingException {
 		String id = getId();
